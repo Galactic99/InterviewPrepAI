@@ -1,43 +1,56 @@
-import React from 'react';
-import Image from 'next/image';
-import { Button } from '@/components/ui/button';
+import React from "react";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { dummyInterviews } from "@/constants";
+import InterviewCard from "@/components/InterviewCard";
 
 const Page = () => {
   return (
     <>
-         <div className="bg-gradient-to-b from-[#171532] to-[#08090D] rounded-2xl">
-        <div className="container mx-auto px-4 py-8 flex justify-between items-start">
-          <div className="max-w-xl pt-8 pl-8">
-            <p className="text-4xl font-bold text-white">
-              Get Interview Ready with Ai-
-            </p>
-            <p className="text-4xl font-bold text-white mb-4">
-              Powered Pracitce & Feedback
-            </p>
-            <p>Practice real interview questions & get instant feedback</p>
-            <Button className="mt-6 rounded-full font-semibold bg-[#CAC5FE] hover:bg-[#B8B2FF] text-black">
-              Start an Interview
-            </Button>
-          </div>
-          <div className="flex-shrink-0">
-            <Image
-              src="/robot.png"
-              alt="robot"
-              width={441}
-              height={322}
-              className="object-contain"
-            />
-          </div>
+      <section className="card-cta">
+        <div className="flex flex-col gap-6 max-w-lg">
+          <h2>Get Interview Ready With AI-Powered Practice & Feedback</h2>
+          <p className="text-lg">
+            Practice on real interview questions & get real interview feedback
+          </p>
+          <Button asChild className="btn-primary max-sm:w-full">
+            <Link href="/interview">Start an Interview</Link>
+          </Button>
         </div>
-      </div>
 
-      <div>
-        <div>
-          <h3>Your Past Interviews</h3>
+        <Image
+          src="/robot.png"
+          alt="robot"
+          width={400}
+          height={400}
+          className="max-sm:hidden"
+        />
+      </section>
+
+      <section className="flex flex-col gap-6 mt-8">
+        <h2>Your Interviews</h2>
+
+        <div className="interviews-section">
+          {dummyInterviews.map((interview) => (
+            <InterviewCard {...interview} key={interview.id} />
+          ))}
+
+          {/* <p>You have not taken any interviews yet</p> */}
         </div>
-      </div>
+      </section>
+
+      <section className="flex flex-col gap-6 mt-8">
+        <h2>Take an interview</h2>
+
+        <div className="interviews-section">
+          {dummyInterviews.map((interview) => (
+            <InterviewCard {...interview} key={interview.id} />
+          ))}
+        </div>
+      </section>
     </>
-  )
-}
+  );
+};
 
 export default Page;
