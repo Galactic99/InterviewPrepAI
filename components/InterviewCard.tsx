@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import DisplayTechIcons from "./DisplayTechIcons";
 
 const InterviewCard = ({
-  interviewId,
+  id,
   userId,
   role,
   type,
@@ -62,13 +62,15 @@ const InterviewCard = ({
         </div>
 
         <div className="flex flex-row justify-between">
-            <DisplayTechIcons techStack={techstack} />
+          <DisplayTechIcons techStack={techstack} />
 
-            <Button className="btn-primary">
-              <Link href={feedback ? `/interview/${interviewId}/feedback` : `/interview/${interviewId}`}></Link>
-                {feedback ? 'Check Feedback' : 'View Interview'}
-            </Button>
-
+          <Button className="btn-primary">
+            <Link
+              href={feedback ? `/interview/${id}/feedback` : `/interview/${id}`}
+            >
+              {feedback ? "Check Feedback" : "View Interview"}
+            </Link>
+          </Button>
         </div>
       </div>
     </div>
