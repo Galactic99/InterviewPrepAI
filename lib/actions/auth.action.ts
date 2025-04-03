@@ -30,10 +30,10 @@ export async function signUp(params: SignUpParams) {
     } catch (error: any) {
         console.error("Error signing up:", error);
 
-        if(error.code === 'auth/email-already-exists') {
+        if (error.code === 'auth/email-already-exists') {
             return {
-                success : false,
-                message : "Email already exists. Please use a different email."
+                success: false,
+                message: "Email already exists. Please use a different email."
             }
         }
 
@@ -61,7 +61,7 @@ export async function signIn(params: SignInParams) {
     } catch (error) {
         console.log("Error signing in:", error);
 
-        return{
+        return {
             success: false,
             message: "Something went wrong. Failed to sign in."
         }
@@ -118,3 +118,25 @@ export async function isAuthenticated() {
 
     return !!user;
 }
+
+export async function getInterviewsByUserId(userId: string): Promise<Interview[] | null> {
+    const interviews = await db.collection('interviews').where('userId', '==', userId).orderBy('createdAt', 'desc').get();
+
+    return interviews.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+    })) as Interview[];
+}
+
+export async function getLatestInterviews(params: GetLatestInterviewParams): Promise<Interview[] | null> {
+    const { userId, limit = 20 } = params;
+
+    const interviews = await db.collection('interviews').orderBy('createdAt', 'desc').where('finalized', '==', true).where('userId', '!=', userId).limit(limit).get();
+
+    return interviews.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+    })) as Interview[];
+}
+
+
