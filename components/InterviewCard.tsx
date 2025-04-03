@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import DisplayTechIcons from "./DisplayTechIcons";
 import { getFeedbackByInterviewId } from "@/lib/actions/general.action";
+import { getCurrentUser } from "@/lib/actions/auth.action";
 
 const InterviewCard = async ({
   id,
@@ -15,7 +16,13 @@ const InterviewCard = async ({
   techstack,
   createdAt,
 }: InterviewCardProps) => {
-  const feedback = userId && id ? await getFeedbackByInterviewId({ interviewId: id, userId }) : null;
+  const currentUser = await getCurrentUser();
+  const isOwnInterview = currentUser?.id === userId;
+  
+  // Only fetch feedback if it's the user's own interview
+  const feedback = isOwnInterview && userId && id ? 
+    await getFeedbackByInterviewId({ interviewId: id, userId }) : null;
+  
   const normalizedType = /mix/gi.test(type) ? "Mixed" : type;
   const formattedDate = dayjs(
     feedback?.createdAt || createdAt || Date.now()
@@ -52,24 +59,25 @@ const InterviewCard = async ({
 
             <div className="flex flex-row gap-2 items-center">
               <Image src="/star.svg" alt="star" width={22} height={22} />
-              <p>{feedback?.totalScore || "---"}/100</p>
+              <p>{isOwnInterview ? (feedback?.totalScore || "---") : "---"}/100</p>
             </div>
           </div>
 
           <p className="line-clamp-2 mt-5">
-            {feedback?.finalAssessment ||
-              "You have not taken the interview yet. Take it now to improve your skills"}
+            {isOwnInterview 
+              ? (feedback?.finalAssessment || "You have not taken the interview yet. Take it now to improve your skills")
+              : "Take this interview to practice your skills"}
           </p>
         </div>
 
         <div className="flex flex-row justify-between">
           <DisplayTechIcons techStack={techstack} />
 
-          <Button className="btn-primary">
+          <Button className="btn-primary" asChild>
             <Link
-              href={feedback ? `/interview/${id}/feedback` : `/interview/${id}`}
+              href={isOwnInterview && feedback ? `/interview/${id}/feedback` : `/interview/${id}`}
             >
-              {feedback ? "Check Feedback" : "View Interview"}
+              {isOwnInterview && feedback ? "Check Feedback" : "View Interview"}
             </Link>
           </Button>
         </div>
