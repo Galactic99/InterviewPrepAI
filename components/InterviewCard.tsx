@@ -1,5 +1,7 @@
 import React from "react";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 import Image from "next/image";
 import { getRandomInterviewCover } from "@/lib/utils";
 import Link from "next/link";
@@ -7,6 +9,10 @@ import { Button } from "@/components/ui/button";
 import DisplayTechIcons from "./DisplayTechIcons";
 import { getFeedbackByInterviewId } from "@/lib/actions/general.action";
 import { getCurrentUser } from "@/lib/actions/auth.action";
+
+// Initialize dayjs plugins
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const InterviewCard = async ({
   id,
@@ -24,9 +30,22 @@ const InterviewCard = async ({
     await getFeedbackByInterviewId({ interviewId: id, userId }) : null;
   
   const normalizedType = /mix/gi.test(type) ? "Mixed" : type;
-  const formattedDate = dayjs(
-    feedback?.createdAt || createdAt || Date.now()
-  ).format("MMM D, YYYY");
+  
+  // Safer date formatting with error handling
+  let formattedDate = "N/A";
+  try {
+    const dateToFormat = feedback?.createdAt || createdAt;
+    if (dateToFormat) {
+      // Ensure we're working with UTC dates to avoid timezone issues
+      formattedDate = dayjs(dateToFormat).utc().format("MMM D, YYYY");
+    } else {
+      formattedDate = dayjs().utc().format("MMM D, YYYY");
+    }
+  } catch (error) {
+    console.error("Error formatting date:", error);
+    // Fallback to current date if there's an error
+    formattedDate = dayjs().utc().format("MMM D, YYYY");
+  }
 
   return (
     <div className="card-border w-[360px] max-sm:w-full min-h-96">
